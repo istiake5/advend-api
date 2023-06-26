@@ -97,15 +97,19 @@ class User extends Controller
         if ($user) {
             if (password_verify($password, $user->password)) {
                 //2 step verification
-                $token =  bin2hex(random_bytes(80));
-                DB::table('two_step_verification_codes')->where('user_id', $user->id)->delete();
-                $code =  $this->random_6_digit_number();
-                DB::table('two_step_verification_codes')->insert(['user_id' => $user->id, 'code' => $code, 'token' => $token, 'created_at' => now(), 'updated_at' => now()]);
-                Mail::to($user->email)->send(new login_token($user->username, $code));
+                // $token =  bin2hex(random_bytes(80));
+                // DB::table('two_step_verification_codes')->where('user_id', $user->id)->delete();
+                // $code =  $this->random_6_digit_number();
+                // DB::table('two_step_verification_codes')->insert(['user_id' => $user->id, 'code' => $code, 'token' => $token, 'created_at' => now(), 'updated_at' => now()]);
+                // Mail::to($user->email)->send(new login_token($user->username, $code));
 
+                // return response()->json([
+                //     'token' => $token
+                // ]);
                 return response()->json([
-                    'token' => $token
-                ]);
+                    'valid' => 'Successfully logged in!',
+                    'data' => ['id' => $user->id, 'email' => $user->email, 'token' => $user->createToken('authToken')->plainTextToken]
+                ], 201);
             } else {
                 return response()->json([
                     'error' => 'Invalid data!'
